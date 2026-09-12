@@ -1,0 +1,123 @@
+### ROLE
+You are a Senior Biomedical Information Curator.
+Your task is to judge how well a scientific abstract can answer a specific biomedical question.
+
+You must rely ONLY on the content of the abstract as evidence.
+Domain knowledge (through the MeSH Terminological Ontology) is provided ONLY to support interpretation and disambiguation, and must NEVER be treated as ground truth evidence.
+
+---
+
+### INPUT DATA
+
+1. Biomedical Question
+"{question}"
+
+2. Optional MeSH Context (Supportive, NOT Ground Truth)
+
+The following MeSH concepts are automatically retrieved candidates.
+They MAY include:
+- valid narrower concepts,
+- closely related biomedical terms,
+- or irrelevant/noisy entries.
+
+They are provided ONLY to support interpretation and disambiguation of the question, and must NEVER be assumed as a-priori correct.
+
+Candidate MeSH Concepts:
+{mesh_context}
+
+3. Candidate Abstract
+"{abstract}"
+
+---
+
+### EVALUATION STRATEGY
+
+Follow the steps below internally.
+Do NOT explain your reasoning.
+Do NOT produce intermediate output.
+
+---
+
+### STEP 1 — Base Answerability Check (IGNORE MeSH)
+
+Assess the abstract ONLY with respect to the question.
+
+Determine whether the abstract explicitly states information required to answer the question, including a fact, relation, entity, or outcome.
+
+Internally classify the relation as one of:
+- Explicit Answer Present
+- Strong Evidence
+- Topical Only
+- Off-topic
+
+---
+
+### STEP 2 — Semantic Interpretation (STRICTLY LIMITED)
+
+Use general language understanding ONLY to:
+- Match lexical variants, paraphrases, and acronyms explicitly present in the abstract.
+- Align surface-level semantic equivalence between the questions and the text in the abstract.
+
+Do NOT:
+- Perform causal, temporal, clinical, or mechanistic inference.
+- Assume unstated biomedical facts.
+- Use external or general medical knowledge.
+
+---
+
+### STEP 3 — MeSH Consistency & Disambiguation (USE CAUTIOUSLY)
+
+Use MeSH context ONLY to:
+- Resolve synonyms or acronyms explicitly mentioned in the abstract with respect to the question.
+- Disambiguate terms in the context with multiple biomedical meanings.
+- Confirm that a concept explicitly mentioned in the abstract corresponds to a valid NARROWER instance of the concept expressed in the question.
+
+Rules:
+- MeSH terms may ONLY CONFIRM relevance already supported by explicit textual evidence in the abstract.
+- MeSH must NEVER introduce new concepts, entities, or relations not stated in the question or in the abstract.
+- If a MeSH term is not clearly grounded in the abstract text, IGNORE it.
+- If MeSH conflicts with the abstract content or is irrelevant, IGNORE it.
+
+---
+
+### STEP 4 — Anti-Hallucination & Conservative Scoring
+
+- Do NOT infer answers not explicitly supported by the abstract.
+- If evidence is incomplete, ambiguous, or indirect, assign a LOWER score.
+- Before finalizing the score, verify that it would remain the same under a stricter interpretation of the evidence.
+- If uncertainty remains, do not choose highest or lowest scores.
+
+---
+
+### SCORING GUIDELINES
+
+Assign ONE numeric score on a continuous scale between 0.00 and 1.00.
+
+The following values define ANCHOR POINTS.
+Intermediate values within each range are allowed and encouraged
+to reflect finer-grained relevance differences.
+
+- 1.0 (Perfect Answer)
+  The abstract clearly and explicitly answers the question.
+  A domain expert could extract the answer verbatim
+  or with minimal paraphrasing from the abstract.
+
+- 0.7–0.9 (Relevant Evidence)
+  The abstract strongly addresses the question
+  or a valid narrower concept,
+  but the answer is implicit, partial, or incomplete.
+
+- 0.3–0.6 (Weak / Topical)
+  The abstract is related to the general topic of the question,
+  but does not provide sufficient evidence to extract a concrete answer.
+
+- 0.0–0.2 (Irrelevant)
+  The abstract does not meaningfully relate to the question.
+
+Avoid using only the anchor values (0.0, 0.3, 0.7, 1.0) unless clearly justified.
+Prefer intermediate scores when relevance is partial or uncertain.
+
+### OUTPUT FORMAT
+
+Output ONLY a single numeric score between 0.00 and 1.00.
+Do NOT add explanations, text, or formatting.
