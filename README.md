@@ -30,7 +30,7 @@ To ensure sustainable and locally deployable evaluation, our system adopts a cas
 The project is designed for out-of-the-box execution. No external database connections (e.g., Qdrant) are required.
 
 ```text
-repo_clic2026/
+mesh-grounded-reranking/
 ├──assets/
 │   └── system.png 
 ├── prompts/
